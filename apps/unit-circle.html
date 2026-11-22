@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1306203 – Unit Circle &amp; Sinusoids</title>
+<style>
+html,body{margin:0;padding:0;background:transparent;}
+body{padding:8px;}
+</style>
+</head>
+<body>
+
+<div id="app" class="animation-app">
+
+<style>
+#app {
+    width:100%;
+    max-width:1400px;
+    margin:auto;
+    padding:clamp(8px, 2vw, 24px);
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+    position:relative;
+    color:#1f2a44;
+    background:linear-gradient(160deg,#f7f9ff 0%,#eaf0fc 100%);
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(31,42,68,0.10);
+}
+
+#app * {
+    box-sizing:border-box;
+}
+
+#app h2 {
+    text-align:center;
+    font-size:clamp(20px, 2.8vw, 32px);
+    margin:12px 0 20px;
+    padding:0 140px;      /* keeps long titles clear of the mode button */
+    letter-spacing:0.5px;
+    background:linear-gradient(90deg,#2f6fed,#12a36a);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    color:transparent;
+}
+
+#app .button-row {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+    margin:12px auto;
+}
+
+#app button {
+    color:white;
+    padding:11px clamp(12px,2vw,25px);
+    border:0;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:clamp(13px,1.5vw,16px);
+    font-weight:bold;
+    white-space:nowrap;
+    touch-action:manipulation;
+    box-shadow:0 4px 10px rgba(0,0,0,0.22);
+    transition:transform .12s, box-shadow .12s, filter .12s;
+}
+
+#app button:hover {
+    transform:translateY(-1px);
+    filter:brightness(1.08);
+    box-shadow:0 6px 14px rgba(0,0,0,0.28);
+}
+
+#app button:active {
+    transform:scale(0.97);
+}
+
+#app .play  {background:linear-gradient(135deg,#27b57a,#168553);}
+#app .pause {background:linear-gradient(135deg,#f0b429,#cf8a00);}
+#app .reset {background:linear-gradient(135deg,#6b7488,#454c5e);}
+#app .step  {background:linear-gradient(135deg,#3b82f6,#1a56c4);}
+#app .theme {
+    background:linear-gradient(135deg,#8b6cff,#5a3fd4);
+    position:absolute;
+    top:clamp(24px,3vw,36px);
+    right:clamp(8px,1.5vw,16px);
+    padding:8px 14px;
+    font-size:clamp(12px,1.3vw,14px);
+    z-index:2;
+}
+
+#app .parameters {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:clamp(15px,3vw,35px);
+    margin:25px auto;
+}
+
+#app .parameter {
+    font-size:clamp(15px,2vw,20px);
+    font-weight:bold;
+    text-align:center;
+}
+
+#app .parameter input {
+    display:block;
+    width:clamp(100px,15vw,130px);
+    margin:7px auto 0;
+    padding:9px;
+    font-size:clamp(16px,2vw,20px);
+    border:1px solid #b9c5e0;
+    border-radius:8px;
+    text-align:center;
+    background:#ffffff;
+    color:#1f2a44;
+}
+
+#app .parameter input:focus {
+    outline:none;
+    border-color:#2f6fed;
+    box-shadow:0 0 0 3px rgba(47,111,237,0.25);
+}
+
+#app .status {
+    text-align:center;
+    width:fit-content;
+    max-width:100%;
+    margin:8px auto;
+    padding:10px 22px;
+    border-radius:999px;
+    background:#ffffff;
+    border:1px solid #d3dcf0;
+    box-shadow:0 3px 10px rgba(31,42,68,0.08);
+    font-size:clamp(12px,1.6vw,17px);
+    font-weight:bold;
+    line-height:1.7;
+}
+
+#app .graphs {
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    gap:15px;
+    width:100%;
+    margin:10px auto;
+}
+
+#app .graph {
+    display:block;
+    height:auto;
+    background:linear-gradient(180deg,#ffffff,#f0f4fc);
+    border:1px solid #cdd7ec;
+    border-radius:14px;
+    box-shadow:0 6px 18px rgba(31,42,68,0.12);
+    max-width:100%;
+}
+
+#app .circle {
+    width:430px;
+    flex:1 1 350px;
+    max-width:430px;
+}
+
+#app .waves {
+    width:600px;
+    flex:2 1 480px;
+    max-width:600px;
+}
+
+/* Dark mode */
+#app.dark {
+    background:linear-gradient(160deg,#0d1117 0%,#161d2e 100%);
+    color:#e6edf7;
+    box-shadow:0 10px 30px rgba(0,0,0,0.45);
+}
+
+#app.dark .graph {
+    background:linear-gradient(180deg,#1b2336,#111724);
+    border-color:#2f3b57;
+    box-shadow:0 6px 18px rgba(0,0,0,0.5);
+}
+
+#app.dark .parameter input {
+    background:#0f1522;
+    color:#e6edf7;
+    border-color:#3b4866;
+}
+
+#app.dark .parameter input:focus {
+    border-color:#58a6ff;
+    box-shadow:0 0 0 3px rgba(88,166,255,0.30);
+}
+
+#app.dark .status {
+    background:#1a2233;
+    border-color:#33415f;
+    color:#e6edf7;
+    box-shadow:0 3px 12px rgba(0,0,0,0.4);
+}
+
+#app.dark h2 {
+    background:linear-gradient(90deg,#6aa9ff,#3ddc97);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+/* Tablet */
+@media (max-width:850px) {
+    #app .graphs {
+        gap:12px;
+    }
+
+    #app .circle {
+        flex:1 1 300px;
+    }
+
+    #app .waves {
+        flex:1 1 450px;
+    }
+}
+
+/* Mobile */
+@media (max-width:550px) {
+    #app {
+        padding:6px;
+    }
+
+    #app h2 {
+        margin-top:64px;
+        padding:0;
+    }
+
+    #app .theme {
+        padding:7px 11px;
+    }
+
+    #app .graphs {
+        flex-direction:column;
+        align-items:center;
+        gap:12px;
+    }
+
+    #app .circle,
+    #app .waves {
+        width:100%;
+        max-width:100%;
+        flex:none;
+    }
+
+    #app .parameters {
+        gap:12px;
+        margin:18px auto;
+    }
+
+    #app .parameter {
+        font-size:15px;
+    }
+
+    #app .button-row {
+        gap:7px;
+    }
+
+    #app button {
+        padding:10px 13px;
+    }
+}
+</style>
+
+<button class="theme" id="theme">🌙 DARK MODE</button>
+
+<h2>1306203 Signals & Systems: Unit Circle & Sinusoids</h2>
+
+<!-- FIRST ROW: MAIN CONTROLS -->
+
+<div class="button-row">
+
+<button class="play" id="play">▶ PLAY</button>
+
+<button class="pause" id="pause">Ⅱ PAUSE</button>
+
+<button class="reset" id="reset">↺ RESET</button>
+
+</div>
+
+<!-- SECOND ROW: STEP CONTROLS -->
+
+<div class="button-row">
+
+<button class="step" id="back">◀ STEP BACK</button>
+
+<button class="step" id="forward">STEP FORWARD ▶</button>
+
+</div>
+
+<!-- INTERACTIVE PARAMETERS -->
+
+<div class="parameters">
+
+<label class="parameter">
+Frequency (Hz)
+<input id="freq" type="number"
+value="1" min="0.1" max="20" step="0.1">
+</label>
+
+<label class="parameter">
+Time window (s)
+<input id="window" type="number"
+value="1" min="0.5" max="20" step="0.5">
+</label>
+
+<label class="parameter">
+Step size (s)
+<input id="step" type="number"
+value="0.02" min="0.001" max="1" step="0.01">
+</label>
+
+</div>
+
+<!-- LIVE INFORMATION -->
+
+<div class="status" id="status">
+Time: 0.000 s | Angle: 0° | Frequency: 1 Hz
+</div>
+
+<!-- RESPONSIVE GRAPHS -->
+
+<div class="graphs">
+
+<canvas id="circle" class="graph circle"
+width="430" height="430"></canvas>
+
+<canvas id="waves" class="graph waves"
+width="600" height="450"></canvas>
+
+</div>
+
+<script>
+(function(){
+
+const root=document.getElementById("app");
+
+const circle=root.querySelector("#circle");
+const waves=root.querySelector("#waves");
+
+const c=circle.getContext("2d");
+const w=waves.getContext("2d");
+
+const freq=root.querySelector("#freq");
+const win=root.querySelector("#window");
+const stepInput=root.querySelector("#step");
+const status=root.querySelector("#status");
+
+let time=0;
+let playing=false;
+let lastTimestamp=null;
+let animationID=null;
+
+const cx=215;
+const cy=215;
+const R=155;
+
+// ======================================
+// THEMES (light / dark)
+// ======================================
+
+const themes={
+    light:{text:"#1f2a44",axis:"#9aa6bf",circle:"#2b3a67",radius:"#e5484d",
+           cosProj:"#2f6fed",sinProj:"#12a36a",center:"#1f2a44",
+           cos:"#2f6fed",sin:"#12a36a",grid:"#e0e6f3",zero:"#9aa6bf",
+           tick:"#44506e",axisLine:"#44506e",
+           legendBg:"rgba(255,255,255,0.93)",legendBorder:"#c3cfe6",
+           discInner:"rgba(47,111,237,0.02)",discOuter:"rgba(47,111,237,0.13)",
+           wedge:"rgba(229,72,77,0.22)",
+           areaCos:"rgba(47,111,237,0.10)",areaSin:"rgba(18,163,106,0.10)",
+           plotBg:"rgba(47,111,237,0.035)",dotRing:"#ffffff",glow:5},
+    dark:{text:"#e6edf7",axis:"#6e7b96",circle:"#9db4ff",radius:"#ff6b6b",
+          cosProj:"#58a6ff",sinProj:"#3ddc97",center:"#ffffff",
+          cos:"#58a6ff",sin:"#3ddc97",grid:"#27324a",zero:"#6e7b96",
+          tick:"#b4c0d9",axisLine:"#b4c0d9",
+          legendBg:"rgba(15,21,34,0.93)",legendBorder:"#3b4866",
+          discInner:"rgba(88,166,255,0.03)",discOuter:"rgba(88,166,255,0.20)",
+          wedge:"rgba(255,107,107,0.30)",
+          areaCos:"rgba(88,166,255,0.15)",areaSin:"rgba(61,220,151,0.15)",
+          plotBg:"rgba(255,255,255,0.025)",dotRing:"#111724",glow:16}
+};
+
+let darkMode=!!(window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches);
+let T=themes.light;
+const themeBtn=root.querySelector("#theme");
+
+function applyTheme(){
+    T=darkMode?themes.dark:themes.light;
+    root.classList.toggle("dark",darkMode);
+    document.body.style.background=darkMode?"#0d1117":"transparent";
+    themeBtn.textContent=darkMode?"☀ LIGHT MODE":"🌙 DARK MODE";
+}
+
+themeBtn.addEventListener("click",function(){
+    darkMode=!darkMode;
+    applyTheme();
+    render();
+});
+
+applyTheme();
+
+// ======================================
+// PARAMETERS
+// ======================================
+
+function getFrequency(){
+    return Math.max(0.01,Number(freq.value)||1);
+}
+
+function getStep(){
+    return Math.max(0.001,Number(stepInput.value)||0.02);
+}
+
+function getWindow(){
+    return Math.max(0.1,Number(win.value)||2);
+}
+
+// ======================================
+// UNIT CIRCLE
+// ======================================
+
+function drawCircle(){
+
+    c.clearRect(0,0,430,430);
+
+    const omega=2*Math.PI*getFrequency();
+    const angle=omega*time;
+
+    const x=Math.cos(angle);
+    const y=Math.sin(angle);
+
+    // Canvas Y-axis is inverted
+    const px=cx+R*x;
+    const py=cy-R*y;
+
+    // Half-radius guide ring
+    c.strokeStyle=T.grid;
+    c.lineWidth=1;
+    c.setLineDash([3,4]);
+
+    c.beginPath();
+    c.arc(cx,cy,R/2,0,2*Math.PI);
+    c.stroke();
+
+    c.setLineDash([]);
+
+    // Coordinate axes
+    c.strokeStyle=T.axis;
+    c.lineWidth=1;
+
+    c.beginPath();
+    c.moveTo(25,cy);
+    c.lineTo(405,cy);
+    c.moveTo(cx,25);
+    c.lineTo(cx,405);
+    c.stroke();
+
+    // Tick marks every 30 degrees
+    for(let k=0;k<12;k++){
+
+        const a=k*Math.PI/6;
+
+        c.beginPath();
+        c.moveTo(cx+(R-6)*Math.cos(a),cy-(R-6)*Math.sin(a));
+        c.lineTo(cx+(R+6)*Math.cos(a),cy-(R+6)*Math.sin(a));
+        c.stroke();
+    }
+
+    // Unit circle
+    c.strokeStyle=T.circle;
+    c.lineWidth=2.5;
+
+    c.beginPath();
+    c.arc(cx,cy,R,0,2*Math.PI);
+    c.stroke();
+
+    // Angle wedge
+    const a=((angle%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
+
+    if(a>0.001){
+
+        c.strokeStyle=T.radius;
+        c.lineWidth=1.8;
+        c.beginPath();
+        c.arc(cx,cy,42,0,-a,true);
+        c.stroke();
+
+        if(a>0.4){
+            c.fillStyle=T.radius;
+            c.font="bold 15px Arial";
+            c.fillText("θ",
+                cx+60*Math.cos(a/2)-4,
+                cy-60*Math.sin(a/2)+5);
+        }
+    }
+
+    // Radius
+    c.strokeStyle=T.radius;
+    c.lineWidth=3.5;
+    c.lineCap="round";
+
+    c.beginPath();
+    c.moveTo(cx,cy);
+    c.lineTo(px,py);
+    c.stroke();
+
+    c.lineCap="butt";
+
+    // Cosine projection
+    c.strokeStyle=T.cosProj;
+    c.lineWidth=2.5;
+    c.setLineDash([6,5]);
+
+    c.beginPath();
+    c.moveTo(px,py);
+    c.lineTo(px,cy);
+    c.stroke();
+
+    // Sine projection
+    c.strokeStyle=T.sinProj;
+
+    c.beginPath();
+    c.moveTo(px,py);
+    c.lineTo(cx,py);
+    c.stroke();
+
+    c.setLineDash([]);
+
+    // Projection markers on the axes
+    c.fillStyle=T.cosProj;
+    c.beginPath();
+    c.arc(px,cy,5,0,2*Math.PI);
+    c.fill();
+
+    c.fillStyle=T.sinProj;
+    c.beginPath();
+    c.arc(cx,py,5,0,2*Math.PI);
+    c.fill();
+
+    // Moving point (with glow)
+    c.save();
+    c.shadowColor=T.radius;
+    c.shadowBlur=T.glow+6;
+
+    c.fillStyle=T.radius;
+    c.beginPath();
+    c.arc(px,py,10,0,2*Math.PI);
+    c.fill();
+
+    c.restore();
+
+    c.strokeStyle=T.dotRing;
+    c.lineWidth=2.5;
+    c.beginPath();
+    c.arc(px,py,10,0,2*Math.PI);
+    c.stroke();
+
+    // Center
+    c.fillStyle=T.center;
+    c.beginPath();
+    c.arc(cx,cy,4,0,2*Math.PI);
+    c.fill();
+
+    // Labels
+    c.fillStyle=T.text;
+    c.font="bold 15px Arial";
+
+    c.fillText("UNIT CIRCLE",145,22);
+
+    c.font="15px Arial";
+    c.fillText("0°",cx+R+10,cy+5);
+    c.fillText("90°",cx-20,cy-R-10);
+    c.fillText("180°",cx-R-45,cy+5);
+    c.fillText("270°",cx-25,cy+R+20);
+
+    c.font="bold 15px Arial";
+
+    c.fillStyle=T.radius;
+    c.fillText("P",px+14,py-12);
+
+    c.fillStyle=T.cos;
+    c.fillText("cos(θ)",px+8,cy+20);
+
+    c.fillStyle=T.sin;
+    c.fillText("sin(θ)",cx-65,py-10);
+}
+
+// ======================================
+// SINE AND COSINE GRAPH WITH GRID
+// ======================================
+
+function drawWaves(){
+
+    const left=65;
+    const right=580;
+    const top=45;
+    const bottom=365;
+
+    const omega=2*Math.PI*getFrequency();
+    const windowSize=getWindow();
+
+    const start=Math.max(0,time-windowSize);
+    const end=Math.max(windowSize,time);
+
+    function X(t){
+        return left+(t-start)/(end-start)*(right-left);
+    }
+
+    function Y(v){
+        return 205-v*135;
+    }
+
+    function roundRect(ctx,x,y,wd,ht,r){
+        ctx.beginPath();
+        ctx.moveTo(x+r,y);
+        ctx.arcTo(x+wd,y,x+wd,y+ht,r);
+        ctx.arcTo(x+wd,y+ht,x,y+ht,r);
+        ctx.arcTo(x,y+ht,x,y,r);
+        ctx.arcTo(x,y,x+wd,y,r);
+        ctx.closePath();
+    }
+
+    w.clearRect(0,0,600,450);
+
+    // Vertical time grid
+    const rawInterval=(end-start)/8;
+
+    const magnitude=Math.pow(
+        10,Math.floor(Math.log10(rawInterval))
+    );
+
+    const normalized=rawInterval/magnitude;
+
+    let interval;
+
+    if(normalized<=1) interval=magnitude;
+    else if(normalized<=2) interval=2*magnitude;
+    else if(normalized<=5) interval=5*magnitude;
+    else interval=10*magnitude;
+
+    const firstTick=Math.ceil(start/interval)*interval;
+
+    w.font="11px Arial";
+    w.textAlign="center";
+
+    for(let t=firstTick;t<=end+interval*0.001;t+=interval){
+
+        const xx=X(t);
+
+        w.strokeStyle=T.grid;
+        w.lineWidth=1;
+
+        w.beginPath();
+        w.moveTo(xx,top);
+        w.lineTo(xx,bottom);
+        w.stroke();
+
+        w.fillStyle=T.tick;
+        w.fillText(t.toFixed(2),xx,bottom+18);
+    }
+
+    // Horizontal amplitude grid
+    const amplitudes=[-1,-0.5,0,0.5,1];
+
+    w.textAlign="right";
+
+    amplitudes.forEach(v=>{
+
+        const yy=Y(v);
+
+        w.strokeStyle=(v===0)?T.zero:T.grid;
+        w.lineWidth=(v===0)?1.5:1;
+
+        w.beginPath();
+        w.moveTo(left,yy);
+        w.lineTo(right,yy);
+        w.stroke();
+
+        w.fillStyle=T.tick;
+        w.fillText(v.toFixed(1),left-10,yy+4);
+    });
+
+    // Axes
+    w.strokeStyle=T.axisLine;
+    w.lineWidth=1.5;
+
+    w.beginPath();
+    w.moveTo(left,top);
+    w.lineTo(left,bottom);
+    w.lineTo(right,bottom);
+    w.stroke();
+
+    w.fillStyle=T.text;
+    w.textAlign="center";
+    w.font="bold 14px Arial";
+
+    w.fillText("SINUSOIDAL SIGNALS",300,23);
+
+    w.font="14px Arial";
+    w.fillText("Time (seconds)",320,420);
+
+    w.save();
+    w.translate(15,205);
+    w.rotate(-Math.PI/2);
+    w.fillText("Amplitude",0,0);
+    w.restore();
+
+    // Draw waveforms (glowing line)
+    function trace(fn){
+
+        for(let i=0;i<=800;i++){
+
+            const t=start+(end-start)*i/800;
+
+            const xx=X(t);
+            const yy=Y(fn(omega*t));
+
+            if(i===0) w.moveTo(xx,yy);
+            else w.lineTo(xx,yy);
+        }
+    }
+
+    function plot(color,fillColor,fn){
+
+        // Wave line with glow
+        w.save();
+        w.shadowColor=color;
+        w.shadowBlur=T.glow;
+
+        w.beginPath();
+        w.strokeStyle=color;
+        w.lineWidth=2.8;
+        w.lineJoin="round";
+        trace(fn);
+        w.stroke();
+
+        w.restore();
+    }
+
+    plot(T.sin,T.areaSin,Math.sin);
+    plot(T.cos,T.areaCos,Math.cos);
+
+    // Moving cursor
+    const px=X(time);
+
+    w.strokeStyle=T.radius;
+    w.lineWidth=1.8;
+    w.setLineDash([5,5]);
+
+    w.beginPath();
+    w.moveTo(px,top);
+    w.lineTo(px,bottom);
+    w.stroke();
+
+    w.setLineDash([]);
+
+    // Moving signal points
+    const angle=omega*time;
+
+    function dot(color,value){
+
+        w.save();
+        w.shadowColor=color;
+        w.shadowBlur=T.glow+4;
+
+        w.fillStyle=color;
+        w.beginPath();
+        w.arc(px,Y(value),7.5,0,2*Math.PI);
+        w.fill();
+
+        w.restore();
+
+        w.strokeStyle=T.dotRing;
+        w.lineWidth=2;
+        w.beginPath();
+        w.arc(px,Y(value),7.5,0,2*Math.PI);
+        w.stroke();
+    }
+
+    dot(T.sin,Math.sin(angle));
+    dot(T.cos,Math.cos(angle));
+
+    // Legend (rounded box with solid background)
+    roundRect(w,455,47,115,52,8);
+    w.fillStyle=T.legendBg;
+    w.fill();
+
+    w.textAlign="left";
+    w.font="bold 13px Arial";
+
+    w.fillStyle=T.sin;
+    w.fillText("● Sine",467,68);
+
+    w.fillStyle=T.cos;
+    w.fillText("● Cosine",467,88);
+}
+
+// ======================================
+// UPDATE DISPLAY
+// ======================================
+
+function render(){
+
+    drawCircle();
+    drawWaves();
+
+    const f=getFrequency();
+    const omega=2*Math.PI*f;
+
+    const angle=(omega*time*180/Math.PI)%360;
+
+    status.textContent=
+        "Time: "+time.toFixed(3)+" s | "+
+        "Angle: "+angle.toFixed(1)+"° | "+
+        "Frequency: "+f.toFixed(2)+" Hz | "+
+        "ω: "+omega.toFixed(2)+" rad/s";
+}
+
+// ======================================
+// ANIMATION
+// ======================================
+
+function animate(timestamp){
+
+    if(!playing) return;
+
+    if(lastTimestamp!==null){
+
+        const elapsed=Math.min(
+            (timestamp-lastTimestamp)/1000,
+            0.05
+        );
+
+        time+=elapsed;
+    }
+
+    lastTimestamp=timestamp;
+
+    render();
+
+    animationID=requestAnimationFrame(animate);
+}
+
+// ======================================
+// PAUSE
+// ======================================
+
+function pause(){
+
+    playing=false;
+
+    if(animationID!==null){
+        cancelAnimationFrame(animationID);
+    }
+
+    animationID=null;
+    lastTimestamp=null;
+}
+
+// ======================================
+// PLAY
+// ======================================
+
+root.querySelector("#play").addEventListener("click",function(){
+
+    if(playing) return;
+
+    playing=true;
+    lastTimestamp=null;
+
+    animationID=requestAnimationFrame(animate);
+});
+
+// ======================================
+// PAUSE BUTTON
+// ======================================
+
+root.querySelector("#pause").addEventListener("click",pause);
+
+// ======================================
+// RESET
+// ======================================
+
+root.querySelector("#reset").addEventListener("click",function(){
+
+    pause();
+    time=0;
+    render();
+});
+
+// ======================================
+// STEP FORWARD
+// ======================================
+
+root.querySelector("#forward").addEventListener("click",function(){
+
+    pause();
+    time+=getStep();
+    render();
+});
+
+// ======================================
+// STEP BACK
+// ======================================
+
+root.querySelector("#back").addEventListener("click",function(){
+
+    pause();
+    time=Math.max(0,time-getStep());
+    render();
+});
+
+// ======================================
+// FREQUENCY INPUT
+// ======================================
+
+freq.addEventListener("change",function(){
+
+    if(!Number.isFinite(Number(freq.value)) ||
+       Number(freq.value)<=0){
+
+        freq.value=1;
+    }
+
+    render();
+});
+
+// ======================================
+// TIME WINDOW INPUT
+// ======================================
+
+win.addEventListener("change",function(){
+
+    if(!Number.isFinite(Number(win.value)) ||
+       Number(win.value)<=0){
+
+        win.value=2;
+    }
+
+    render();
+});
+
+// ======================================
+// STEP SIZE INPUT
+// ======================================
+
+stepInput.addEventListener("change",function(){
+
+    if(!Number.isFinite(Number(stepInput.value)) ||
+       Number(stepInput.value)<=0){
+
+        stepInput.value=0.02;
+    }
+});
+
+// ======================================
+// RESPONSIVE RESIZING
+// ======================================
+
+let resizeObserver=null;
+
+if(typeof ResizeObserver!=="undefined"){
+
+    resizeObserver=new ResizeObserver(function(){
+
+        render();
+
+    });
+
+    resizeObserver.observe(root.querySelector(".graphs"));
+}
+
+window.addEventListener("resize",function(){
+    render();
+});
+
+// Initial display
+render();
+
+})();
+</script>
+
+</div>
+
+<script>
+// tell the parent page how tall this app is, so the iframe fits it exactly
+(function(){
+  var el=document.getElementById("app");
+  function send(){
+    var h=Math.ceil(el.getBoundingClientRect().height)+16;
+    if(window.parent!==window) window.parent.postMessage({appHeight:h,app:location.pathname},"*");
+  }
+  if(typeof ResizeObserver!=="undefined") new ResizeObserver(send).observe(el);
+  window.addEventListener("load",send);
+  window.addEventListener("resize",send);
+  send();
+})();
+</script>
+</body>
+</html>
