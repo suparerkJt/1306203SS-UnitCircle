@@ -5,13 +5,6 @@ Eight interactive web apps (plain HTML/JavaScript, no server needed):
 | Tab | File |
 |-----|------|
 | Unit Circle & Sinusoids | `apps/unit-circle.html` |
-| Basic Continuous-Time Signals | `apps/ct-signals.html` |
-| Basic Discrete-Time Signals | `apps/dt-signals.html` |
-| Time Operations (Continuous-Time) | `apps/ct-operations.html` |
-| Time Operations (Discrete-Time) | `apps/dt-operations.html` |
-| Impulse Representation | `apps/impulse-representation.html` |
-| Convolution Integral | `apps/convolution-integral.html` |
-| Convolution Sum | `apps/convolution-sum.html` |
 
 `index.html` is the page with the eight tabs. A tab can be linked directly,
 e.g. `https://USERNAME.github.io/REPO/#ct-operations`.
